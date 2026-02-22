@@ -64,6 +64,58 @@ app.listen(PORT, () => {
     'DELETE /api/books/:id': 'Delete a book'
 */
 
+// POST /api/books - Add a new book
+app.post('/api/books', (req, res) => {
+    const { title, author, genre, copiesAvailable } = req.body;
+
+    if (!title || !author) {
+        return res.status(400).json({ error: 'Title and author are required' });
+    }
+
+    const nextId = books.length ? Math.max(...books.map(b => b.id)) + 1 : 1;
+    const newBook = {
+        id: nextId,
+        title,
+        author,
+        genre: genre || '',
+        copiesAvailable: typeof copiesAvailable === 'number' ? copiesAvailable : 0
+    };
+
+    books.push(newBook);
+    res.status(201).json(newBook);
+});
+
+// PUT /api/books/:id - Update an existing book
+app.put('/api/books/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const book = books.find(b => b.id === id);
+
+    if (!book) {
+        return res.status(404).json({ error: 'Book not found' });
+    }
+
+    const { title, author, genre, copiesAvailable } = req.body;
+    if (title !== undefined) book.title = title;
+    if (author !== undefined) book.author = author;
+    if (genre !== undefined) book.genre = genre;
+    if (copiesAvailable !== undefined) book.copiesAvailable = copiesAvailable;
+
+    res.json(book);
+});
+
+// DELETE /api/books/:id - Delete a book
+app.delete('/api/books/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const index = books.findIndex(b => b.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Book not found' });
+    }
+
+    books.splice(index, 1);
+    res.sendStatus(204);
+});
+
 
 
 
