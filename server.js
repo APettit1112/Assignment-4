@@ -76,10 +76,7 @@ app.post('/api/books', (req, res) => {
         });
     }
 
-    const nextId =
-        books.length
-            ? Math.max(...books.map(b => b.id)) + 1
-            : 1;
+    const nextId = books.length + 1;
 
     const newBook = {
         id: nextId,
